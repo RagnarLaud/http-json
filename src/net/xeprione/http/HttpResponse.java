@@ -43,10 +43,6 @@ public class HttpResponse {
 
         byte[] message = new byte[Integer.parseInt(header.getField("Content-Length", "0"))];
         int length = stream.read(message);
-        if(message.length != length){
-            // TODO: Will this even happen?
-            throw new RuntimeException("Message length is not the same as the received data size");
-        }
 
         return new HttpResponse(header, message);
     }

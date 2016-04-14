@@ -8,12 +8,16 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         // Create the header
-        HttpHeader header = new HttpHeader(HttpHeader.Method.GET, new RequestURL("http://httpbin.org/ip"));
-        // Print out the header
-        System.out.println(header);
-        // Create a request and execute it
-        HttpResponse response = new HttpRequest(header).execute();
+        HttpPostData data = new HttpPostData();
+        data.setProperty("test", "testValue");
+        data.setProperty("test2", "testValue2");
+        data.setProperty("test3", "testValue3");
+        HttpRequest request = HttpRequest.createPostRequest("http://httpbin.org/post", data);
+        System.out.println(request);
+        // Execute the request above
+        HttpResponse response = request.execute();
         // Print out the response
         System.out.println(response);
     }
+
 }

@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class ResponseHeader {
 
-    private final HashMap<String, String> fields = new HashMap<>();
+    private final HashMap<HeaderField, String> fields = new HashMap<>();
 
     private final HttpHeader.Version version;
     private final int status;
@@ -25,22 +25,30 @@ public class ResponseHeader {
         return new ResponseHeader(version, statusCode, statusMessage);
     }
 
-    public void setField(String field, String value) {
+    public void setField(HeaderField field, String value) {
         fields.put(field, value);
     }
 
     public String getField(String field){
+        return getField(HeaderField.find(field));
+    }
+
+    public String getField(String field, String defaultValue){
+        return getField(HeaderField.find(field), defaultValue);
+    }
+
+    public String getField(HeaderField field){
         return getField(field, "");
     }
 
-    public String getField(String field, String defaultValue) {
+    public String getField(HeaderField field, String defaultValue) {
         return fields.getOrDefault(field, defaultValue);
     }
 
     public void setField(String string) {
         String[] foo = string.split(":");
         if (foo.length >= 2) {
-            String field = foo[0].trim();
+            HeaderField field = HeaderField.find(foo[0].trim());
             String value = foo[1].trim();
             setField(field, value);
         }
@@ -52,7 +60,7 @@ public class ResponseHeader {
 
         builder.append(String.format("%s %s %s", version, status, statusMessage)).append("\n");
 
-        for(String field : fields.keySet()){
+        for(HeaderField field : fields.keySet()){
             builder.append(field).append(": ").append(fields.get(field)).append("\n");
         }
 

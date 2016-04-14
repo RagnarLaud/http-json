@@ -4,43 +4,6 @@ import java.util.HashMap;
 
 public class HttpHeader {
 
-    public enum Field {
-        Accept("Accept"),
-        AcceptCharset("Accept-Charset"),
-        AcceptEncoding("Accept-Encoding"),
-        AcceptLanguage("Accept-Language"),
-        Authorization("Authorization"),
-        Expect("Expect"),
-        From("From"),
-        Host("Host"),
-        IfMatch("If-Match"),
-        IfModifiedSince("If-Modified-Since"),
-        IfNoneMatch("If-None-Match"),
-        IfRange("If-Range"),
-        IfUnmodifiedSince("If-Unmodified-Since"),
-        MaxForwards("Max-Forwards"),
-        ProxyAuthorization("Proxy-Authorization"),
-        Range("Range"),
-        Referer("Referer"),
-        TE("TE"),
-        UserAgent("User-Agent");
-
-        private final String field;
-
-        Field(String header) {
-            this.field = header;
-        }
-
-        public String getField() {
-            return field;
-        }
-
-        @Override
-        public String toString() {
-            return getField();
-        }
-    }
-
     public enum Method {
         OPTIONS, GET, HEAD, POST, PUT, DELETE
     }
@@ -64,10 +27,11 @@ public class HttpHeader {
         }
     }
 
+    private final HashMap<HeaderField, String> fields = new HashMap<>();
+
     private Method method;
     private RequestURL url;
     private Version version;
-    private final HashMap<Field, String> fields = new HashMap<>();
 
     public HttpHeader(Method method, RequestURL url) {
         this(method, url, Version.HTTP11);
@@ -78,8 +42,8 @@ public class HttpHeader {
         this.url = url;
         this.version = version;
 
-        setField(Field.UserAgent, "HTTP-JSON");
-        setField(Field.Host, url.getHost());
+        setField(HeaderField.UserAgent, "HTTP-JSON");
+        setField(HeaderField.Host, url.getHost());
     }
 
     public Method getMethod() {
@@ -106,8 +70,8 @@ public class HttpHeader {
         this.version = version;
     }
 
-    public void setField(Field field, String value) {
-        fields.put(field, value);
+    public void setField(HeaderField HeaderField, Object value) {
+        fields.put(HeaderField, value.toString());
     }
 
     public byte[] build() {
@@ -120,9 +84,9 @@ public class HttpHeader {
 
         string.append(String.format("%s %s %s", method, url.getFilename(), version)).append("\n");
 
-        for (Field field : fields.keySet()) {
-            String key = fields.get(field);
-            string.append(field).append(": ").append(key).append("\n");
+        for (HeaderField HeaderField : fields.keySet()) {
+            String key = fields.get(HeaderField);
+            string.append(HeaderField).append(": ").append(key).append("\n");
         }
 
         return string.toString();
